@@ -46,7 +46,33 @@ const WalletPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchAccounts();
+    let isMounted = true; // Track whether the component is mounted
+
+    const fetchData = async () => {
+      setLoading(true);
+      setError(false);
+      try {
+        const accountService = new AccountService();
+        const fetchedWallets = await accountService.getAccounts();
+        if (isMounted) {
+          setWallets(fetchedWallets);
+        }
+      } catch {
+        if (isMounted) {
+          setError(true);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false; // Cleanup on unmount
+    };
   }, []);
 
   const handleNewWallet = () => fetchAccounts();
@@ -69,7 +95,7 @@ const WalletPage: React.FC = () => {
 
   return (
     <WalletPageContainer>
-        <AccountList wallets={wallets} onRefresh={handleNewWallet} />
+      <AccountList wallets={wallets} onRefresh={handleNewWallet} />
     </WalletPageContainer>
   );
 };

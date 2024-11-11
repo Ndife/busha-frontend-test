@@ -45,19 +45,35 @@ const BalanceAndCurrencyContainer = styled.div`
 const BalanceText = styled.span`
   font-size: 1em;
   font-weight: bold;
-  min-width: 100px; /* Ensure balance text has a unique and fixed width */
 `;
 
 const CurrencyText = styled.span`
   font-size: 0.9em;
-  color: #bbb;
+  font-weight: bold;
 `;
 
 const IconContainer = styled.div`
   margin-left: auto;
 `;
 
-const WalletCard: React.FC<IAccounts> = ({ imgURL, name, balance, currency }) => {
+const WalletCard: React.FC<IAccounts> = ({type, imgURL, name, balance, currency }) => {
+
+  const getBalance = () => {
+    if(type === 'fiat') return new Intl.NumberFormat('en-NG', {
+        maximumFractionDigits: 8,
+        minimumFractionDigits: 0,
+        style: 'currency',
+        currency
+    }).format(parseFloat(balance))
+
+    return (
+     <>
+      <BalanceText>{balance}</BalanceText> 
+      <CurrencyText>{currency}</CurrencyText>
+     </>
+    )
+}
+
   return (
     <WalletCardContainer>
       <WalletImageWithName>
@@ -66,8 +82,7 @@ const WalletCard: React.FC<IAccounts> = ({ imgURL, name, balance, currency }) =>
       </WalletImageWithName>
       
       <BalanceAndCurrencyContainer>
-        <BalanceText>{balance}</BalanceText> 
-        <CurrencyText>{currency}</CurrencyText>
+        {getBalance()}
       </BalanceAndCurrencyContainer>
 
       <IconContainer>
