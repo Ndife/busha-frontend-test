@@ -11,7 +11,7 @@ export class WalletService {
   }
 
   public async getWallets(): Promise<IWallets[]> {
-    const response = await this.apiClient.get<Partial<IResponse>>({ url: `/bushaHQ/busha-frontend-test/wallets` });
+    const response = await this.apiClient.get<Partial<IResponse>>({ url: "wallets" });
     if (response.error) throw new Error(response.message || "Failed to fetch wallet records");
     return response as IWallets[];
   }
