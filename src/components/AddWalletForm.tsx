@@ -36,7 +36,12 @@ const LoaderContainer = styled.div`
   text-align: center;
 `;
 
-// AddWalletForm component
+const ErrorContainer = styled.div`
+  position: absolute;
+  top: -5%;
+  left: 30%;
+`;
+
 const AddWalletForm: React.FC<{ closeModal: () => void, refreshWallet: () => void }> = ({ closeModal, refreshWallet }) => {
   const [wallets, setWallets] = useState<IWallets[]>([]);
   const [walletCurrency, setWalletCurrency] = useState<string>("");
@@ -79,10 +84,12 @@ const AddWalletForm: React.FC<{ closeModal: () => void, refreshWallet: () => voi
 
   if (error) {
     return (
-      <ErrorBoundary
+      <ErrorContainer>
+        <ErrorBoundary
           message="Network Error"
           onRetry={fetchWallets}
         />
+      </ErrorContainer>
     )
   }
 
