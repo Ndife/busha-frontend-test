@@ -14,7 +14,7 @@ const menuItems = [
 ];
 
 const MainContainer = styled.div`
-  margin-left: 10%;
+  margin-left: 7%;
   display: flex;
   margin-top: 60px;
 `;
