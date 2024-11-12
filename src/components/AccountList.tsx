@@ -19,7 +19,6 @@ const SectionTitle = styled.h2`
 const WalletsGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
   margin-top: 20px;
 `;
 
