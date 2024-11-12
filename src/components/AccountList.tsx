@@ -60,7 +60,7 @@ const NewWalletTitle = styled.div`
 const AddNewWalletSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 20px;
   padding: 20px;
   border-radius: 8px;
   margin-top: 15%;
