@@ -4,19 +4,20 @@ import Logo from "../icons/Logo";
 
 const NavbarContainer = styled.div`
   width: 100%;
-  height: 60px;
   background-color: #fff;
   color: #333;
+  position: fixed;
+  top: 0;
+  padding: 0.6% 0;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const ItemsContainer = styled.div`
+  padding 0px 11%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const LogoCainter = styled.div`
@@ -25,14 +26,12 @@ const LogoCainter = styled.div`
   align-items: flex-end;
   font-size: 20px;
   font-weight: bold;
-  padding-left: 10%;
 `;
 
 const UserProfile = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  padding-right: 10%;
 `;
 
 const Avatar = styled.div`
@@ -60,6 +59,7 @@ const Navbar = () => {
 
   return (
     <NavbarContainer>
+      <ItemsContainer>
       <LogoCainter>
         <Logo />
         busha
@@ -68,6 +68,7 @@ const Navbar = () => {
         <Avatar>{user.firstName[0]}</Avatar>
         <UserFullName>{`${user.firstName} ${user.lastName}`}</UserFullName>
       </UserProfile>
+      </ItemsContainer>
     </NavbarContainer>
   );
 };

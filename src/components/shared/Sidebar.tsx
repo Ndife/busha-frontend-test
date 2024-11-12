@@ -9,6 +9,7 @@ const SidebarContainer = styled.div`
 const MenuItem = styled.li<{ isActive: boolean }>`
   list-style-type: none;
   padding: 10px;
+  font-size: 16px;
   cursor: pointer;
     font-weight: ${(props) => (props.isActive ? "bold" : "normal")};
   background-color: ${({ isActive }) => (isActive ? "#F5F7FA" : "transparent")};
