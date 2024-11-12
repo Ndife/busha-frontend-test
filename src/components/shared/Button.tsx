@@ -21,15 +21,30 @@ const StyledButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-
+  min-width: 100px;
+  
   &:hover {
     background-color: #45a049;
   }
 `;
 
+const LoaderStyle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px; /* Match the height to the font size */
+  height: 20px;
+`;
+
 const Button: React.FC<ButtonProps> = ({ label, onClick, customStyles, isLoading = false }) => (
   <StyledButton onClick={onClick} style={customStyles} disabled={isLoading}>
-    {isLoading ? <Loader /> : label}
+    {isLoading ? (
+      <LoaderStyle>
+        <Loader size={16} width={2} />
+      </LoaderStyle>
+    ) : (
+      label
+    )}
   </StyledButton>
 );
 
