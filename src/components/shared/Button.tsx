@@ -32,7 +32,7 @@ const LoaderStyle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px; /* Match the height to the font size */
+  width: 20px;
   height: 20px;
 `;
 
