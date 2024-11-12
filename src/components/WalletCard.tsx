@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import RightArrowCircleIcon from "./icons/RightArrowCircleIcon";
 import { IAccounts } from "../apis/handlers/accounts/interfaces";
+import ngn from "../../src/assets/images/ngn.svg";
+import btc from "../../src/assets/images/btc.svg";
+import ltc from "../../src/assets/images/ltc.svg";
+import eth from "../../src/assets/images/eth.svg";
 
 const WalletCardContainer = styled.div`
   display: flex;
@@ -13,15 +17,17 @@ const WalletCardContainer = styled.div`
   width: 240px;
   margin: 10px;
   text-align: center;
-  gap: 8px;
+  gap: 12px;
 `;
 
 const WalletImage = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  margin-bottom: 15px;
+  margin: 0;
+  margin-bottom: 0;
 `;
+
 
 const WalletImageWithName = styled.div`
   display: flex;
@@ -33,6 +39,8 @@ const WalletImageWithName = styled.div`
 const WalletName = styled.h3`
   font-size: 1.2em;
   margin: 0;
+  color: #9AA5B1;
+  font-size: 14px;
 `;
 
 const BalanceAndCurrencyContainer = styled.div`
@@ -43,12 +51,12 @@ const BalanceAndCurrencyContainer = styled.div`
 `;
 
 const BalanceText = styled.span`
-  font-size: 1em;
+  font-size: 16px;
   font-weight: bold;
 `;
 
 const CurrencyText = styled.span`
-  font-size: 0.9em;
+  font-size: 16px;
   font-weight: bold;
 `;
 
@@ -56,28 +64,50 @@ const IconContainer = styled.div`
   margin-left: auto;
 `;
 
-const WalletCard: React.FC<IAccounts> = ({type, imgURL, name, balance, currency }) => {
+const WalletCard: React.FC<IAccounts> = ({ type, imgURL, name, balance, currency }) => {
+  const [imageSrc, setImageSrc] = useState(imgURL);
+
+  const getWalletIcon = (): string => {
+    switch (currency) {
+      case "NGN":
+        return ngn;
+      case "BTC":
+        return btc;
+      case "LTC":
+        return ltc;
+      case "ETH":
+        return eth;
+      default:
+        return btc;
+    }
+  };
+
+  const handleImageError = () => {
+    setImageSrc(getWalletIcon());
+  };
 
   const getBalance = () => {
-    if(type === 'fiat') return new Intl.NumberFormat('en-NG', {
+    if (type === 'fiat') {
+      return new Intl.NumberFormat('en-NG', {
         maximumFractionDigits: 8,
         minimumFractionDigits: 0,
         style: 'currency',
-        currency
-    }).format(parseFloat(balance))
+        currency,
+      }).format(parseFloat(balance));
+    }
 
     return (
-     <>
-      <BalanceText>{balance}</BalanceText> 
-      <CurrencyText>{currency}</CurrencyText>
-     </>
-    )
-}
+      <>
+        <BalanceText>{balance} </BalanceText>
+        <CurrencyText>{currency}</CurrencyText>
+      </>
+    );
+  };
 
   return (
     <WalletCardContainer>
       <WalletImageWithName>
-        <WalletImage src={imgURL} alt={`${name} logo`} />
+        <WalletImage src={imageSrc} alt={`${name} logo`} onError={handleImageError} />
         <WalletName>{name}</WalletName>
       </WalletImageWithName>
       
