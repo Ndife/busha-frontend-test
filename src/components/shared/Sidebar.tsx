@@ -3,7 +3,16 @@ import styled from "styled-components";
 
 const SidebarContainer = styled.div`
   width: 200px;
-  padding: 20px;
+  margin-top: 15px;
+  ul {
+    padding-left: 0;
+    margin: 0;
+    list-style-type: none;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const MenuItem = styled.li<{ isActive: boolean }>`
@@ -11,7 +20,7 @@ const MenuItem = styled.li<{ isActive: boolean }>`
   padding: 10px;
   font-size: 16px;
   cursor: pointer;
-    font-weight: ${(props) => (props.isActive ? "bold" : "normal")};
+  font-weight: ${(props) => (props.isActive ? "bold" : "normal")};
   background-color: ${({ isActive }) => (isActive ? "#F5F7FA" : "transparent")};
 
   &:hover {

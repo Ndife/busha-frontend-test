@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 // Styled components for the PricesPage layout
 const PricesPageContainer = styled.div`
-  padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
 `;

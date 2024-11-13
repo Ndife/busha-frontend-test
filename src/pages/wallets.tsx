@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import Loader from "../components/shared/Loader";
 import { AccountService } from "../apis/handlers/accounts";
-import { IAccounts } from "../apis/handlers/accounts/interfaces";
 import AccountList from "../components/AccountList";
+import { useWalletContext } from "../context/WalletContext";
 
 const WalletPageContainer = styled.div`
-  padding: 0 20px;
-  max-width: 1200px;
-  margin: 0 auto;
 `;
 
 const LoaderContainer = styled.div`
@@ -18,66 +15,43 @@ const LoaderContainer = styled.div`
   left: 60%;
   transform: translateX(-50%);
   text-align: center;
+
+  @media (max-width: 739px) {
+    left: 50%;
+  }
 `;
 
 const ErrorContainer = styled.div`
   position: relative;
   top: -15%;
   left: -10%;
+
+  @media (max-width: 739px) {
+    left: -5%;
+  }
 `;
 
 const WalletPage: React.FC = () => {
-  const [wallets, setWallets] = useState<IAccounts[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
+  const { state, dispatch } = useWalletContext();
 
   const fetchAccounts = async () => {
-    setLoading(true);
-    setError(false);
+    dispatch({ type: "SET_LOADING", payload: true });
     try {
       const accountService = new AccountService();
       const fetchedWallets = await accountService.getAccounts();
-      setWallets(fetchedWallets);
+      dispatch({ type: "SET_WALLETS", payload: fetchedWallets });
     } catch {
-      setError(true);
+      dispatch({ type: "SET_ERROR", payload: true });
     } finally {
-      setLoading(false);
+      dispatch({ type: "SET_LOADING", payload: false });
     }
   };
 
   useEffect(() => {
-    let isMounted = true; // Track whether the component is mounted
-
-    const fetchData = async () => {
-      setLoading(true);
-      setError(false);
-      try {
-        const accountService = new AccountService();
-        const fetchedWallets = await accountService.getAccounts();
-        if (isMounted) {
-          setWallets(fetchedWallets);
-        }
-      } catch {
-        if (isMounted) {
-          setError(true);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      isMounted = false; // Cleanup on unmount
-    };
+    fetchAccounts();
   }, []);
 
-  const handleNewWallet = () => fetchAccounts();
-
-  if (loading) {
+  if (state.loading) {
     return (
       <LoaderContainer>
         <Loader size={50} width={5} />
@@ -85,7 +59,7 @@ const WalletPage: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (state.error) {
     return (
       <ErrorContainer>
         <ErrorBoundary message="Network Error" onRetry={fetchAccounts} />
@@ -95,7 +69,7 @@ const WalletPage: React.FC = () => {
 
   return (
     <WalletPageContainer>
-      <AccountList wallets={wallets} onRefresh={handleNewWallet} />
+      <AccountList wallets={state.wallets} />
     </WalletPageContainer>
   );
 };

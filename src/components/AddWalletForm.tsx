@@ -10,6 +10,8 @@ import { IWallets } from "../apis/handlers/wallets/interfaces";
 import { AccountService } from "../apis/handlers/accounts";
 import { Currency } from "../apis/handlers/accounts/enum";
 import ErrorBoundary from "./shared/ErrorBoundary";
+import { useWalletContext } from "../context/WalletContext"; // Import context
+import { IAccounts } from "../apis/handlers/accounts/interfaces";
 
 const NetworkErrorMessage = styled.div`
   display: flex;
@@ -40,11 +42,17 @@ const ErrorContainer = styled.div`
   position: absolute;
   top: -5%;
   left: 30%;
+
+   @media (max-width: 739px) {
+    left: 25%;
+  }
 `;
 
-const AddWalletForm: React.FC<{ closeModal: () => void, refreshWallet: () => void }> = ({ closeModal, refreshWallet }) => {
+const AddWalletForm: React.FC<{ closeModal: () => void }> = ({ closeModal }) => {
+  const { dispatch } = useWalletContext();
   const [wallets, setWallets] = useState<IWallets[]>([]);
-  const [walletCurrency, setWalletCurrency] = useState<string>("");
+  const [walletCurrency, setWalletCurrency] = useState<IWallets | undefined>();
+  
   const [networkError, setNetworkError] = useState(false);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -68,19 +76,47 @@ const AddWalletForm: React.FC<{ closeModal: () => void, refreshWallet: () => voi
     fetchWallets();
   }, []);
 
-  const handleCreateWallet = async () => {
-    try {
-      setIsSubmitting(true);
-      const accountService = new AccountService();
-      await accountService.createAccount({ currency: walletCurrency as Currency });
-      refreshWallet();
-      setIsSubmitting(false);
-      closeModal(); // Close modal on success
-    } catch (error) {
-      setIsSubmitting(false);
-      setNetworkError(true);
+  const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedWallet = wallets.find((wallet) => wallet.currency === e.target.value);
+    if (selectedWallet) {
+      setWalletCurrency({
+        currency: selectedWallet.currency,
+        name: selectedWallet.name,
+        type: selectedWallet.type,
+        imgURL: selectedWallet.imgURL,
+      });
     }
   };
+
+  const handleCreateWallet = async () => {
+    if (walletCurrency) {
+      try {
+        setIsSubmitting(true);
+        const accountService = new AccountService();
+        await accountService.createAccount({ currency: walletCurrency.currency as Currency });
+    
+        const accountData: IAccounts = {
+          currency: walletCurrency.currency,
+          hold: "0",
+          pending_balance: "0",
+          balance: "0",
+          name: walletCurrency.name,
+          type: walletCurrency.type,
+          deposit: false,
+          payout: false,
+          imgURL: walletCurrency.imgURL,
+        };
+    
+        dispatch({ type: 'ADD_WALLET', payload: accountData });
+    
+        setIsSubmitting(false);
+        closeModal();
+      } catch (error) {
+        setIsSubmitting(false);
+        setNetworkError(true);
+      }
+    };
+  }
 
   if (error) {
     return (
@@ -90,7 +126,7 @@ const AddWalletForm: React.FC<{ closeModal: () => void, refreshWallet: () => voi
           onRetry={fetchWallets}
         />
       </ErrorContainer>
-    )
+    );
   }
 
   if (isLoading) {
@@ -98,18 +134,18 @@ const AddWalletForm: React.FC<{ closeModal: () => void, refreshWallet: () => voi
       <LoaderContainer>
         <Loader size={50} width={5} />
       </LoaderContainer>
-    )
+    );
   }
 
   return (
     <>
-        <SelectBox
-          label="Select Wallet"
-          value={walletCurrency}
-          onChange={(e) => setWalletCurrency(e.target.value)}
-          options={wallets.map((wallet) => wallet.currency)}
-          placeholder="Select wallet"
-        />
+      <SelectBox
+        label="Select Wallet"
+        value={walletCurrency?.currency ?? ""}
+        onChange={handleCurrencyChange}
+        options={wallets.map((wallet) => wallet.currency)}
+        placeholder="Select wallet"
+      />
 
       <Button
         customStyles={{ width: "222px", alignSelf: "center" }}
@@ -122,7 +158,7 @@ const AddWalletForm: React.FC<{ closeModal: () => void, refreshWallet: () => voi
         <NetworkErrorMessage>
           <NetworkErrorIconAndText>
             <FailedNetworkIcon />
-          <span>Network Error</span>
+            <span>Network Error</span>
           </NetworkErrorIconAndText>
          
           <CancelIcon color="#D72C0D" size={10} />

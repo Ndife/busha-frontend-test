@@ -18,6 +18,12 @@ const WalletCardContainer = styled.div`
   margin: 10px;
   text-align: center;
   gap: 12px;
+
+  @media (max-width: 480px) {
+    width: 100%;
+    position: relative;
+    margin: 0;
+  }
 `;
 
 const WalletImage = styled.img`

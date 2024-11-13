@@ -1,7 +1,7 @@
 import { Currency } from "./enum";
 
 export interface IAccounts {
-  id: string;
+  id?: string;
   currency: string;
   hold: string;
   pending_balance: string;

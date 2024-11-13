@@ -8,24 +8,53 @@ import WalletCard from "./WalletCard";
 import CancelIcon from "./icons/CancelIcon";
 import { IAccounts } from "../apis/handlers/accounts/interfaces";
 
-const WalletsContainer = styled.div``;
+const WalletsContainer = styled.div`
+`;
 
 const SectionTitle = styled.h2`
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+  }
 `;
 
+
 const WalletsGrid = styled.div`
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   margin-top: 20px;
+  gap: 10px;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: nowrap;
+    padding: 0 4%;
+  }
 `;
+
 
 const HeaderSection = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+   @media (max-width: 480px) {
+   width: 100%;
+  }
 `;
 
 const HorizontalRule = styled.hr`
@@ -79,10 +108,9 @@ const ModalTitle = styled.h3`
 
 interface AccountListProps {
   wallets: IAccounts[];
-  onRefresh: () => void;
 }
 
-const AccountList: React.FC<AccountListProps> = ({ wallets, onRefresh }) => {
+const AccountList: React.FC<AccountListProps> = ({ wallets }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const openModal = () => setIsModalOpen(true);
@@ -115,7 +143,7 @@ const AccountList: React.FC<AccountListProps> = ({ wallets, onRefresh }) => {
           <ModalDescription>
             The crypto wallet will be created instantly and be available in your list of wallets.
           </ModalDescription>
-          <AddWalletForm closeModal={closeModal} refreshWallet={onRefresh} />
+          <AddWalletForm closeModal={closeModal} />
         </AddNewWalletSection>
       </Modal>
     </WalletsContainer>

@@ -4,6 +4,7 @@ import Navbar from "./components/shared/Navbar";
 import styled from "styled-components";
 import WalletPage from "./pages/wallets";
 import PricesPage from "./pages/prices";
+import { WalletProvider } from "./context/WalletContext";
 
 const menuItems = [
   { label: "Wallets", link: "/wallets", component: <WalletPage /> },
@@ -14,16 +15,31 @@ const menuItems = [
 ];
 
 const MainContainer = styled.div`
-  padding: 0 7%;
+  padding: 0 9%;
   display: flex;
-  margin-top: 60px;
+  margin-top: 100px;
+  gap: 50px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 0 5%;
+    margin-top: 50px;
+  }
+  
+  @media (max-width: 480px) {
+  padding: 0 4%;
+  }
 `;
 
 const ContentArea = styled.div`
-  padding: 20px;
   flex: 1;
   min-height: 100vh;
+  @media (max-width: 768px) {
+  margin: 0;
+  padding: 0;
+  }
 `;
+
 
 const App: React.FC = () => {
   const [activeItem, setActiveItem] = useState<string>(getInitialRoute());
@@ -54,14 +70,16 @@ const App: React.FC = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar menuItems={menuItems} onMenuItemClick={handleMenuItemClick} />
       <MainContainer>
         <Sidebar
           menuItems={menuItems}
           activeItem={activeItem}
           onMenuItemClick={handleMenuItemClick}
         />
-        <ContentArea>{renderContent()}</ContentArea>
+        <WalletProvider>
+          <ContentArea>{renderContent()}</ContentArea>
+        </WalletProvider>
       </MainContainer>
     </>
   );
