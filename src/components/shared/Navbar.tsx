@@ -169,12 +169,6 @@ const MenuItem = styled.li<{ isActive?: boolean }>`
   &:hover {
     background-color: #f5f7fa;
   }
-
-  a {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-  }
 `;
 
 interface NavbarProps {
@@ -238,7 +232,7 @@ const Navbar: React.FC<NavbarProps> = ({ menuItems, onMenuItemClick }) => {
         </UserProfileMobile>
         {menuItems.map(({ label, link }) => (
           <MenuItem key={link} onClick={() => handleMenuItemClick(link)}>
-            <a href={link}>{label}</a>
+            {label}
           </MenuItem>
         ))}
       </DropdownMenu>

@@ -26,12 +26,6 @@ const MenuItem = styled.li<{ isActive: boolean }>`
   &:hover {
     background-color: #F5F7FA;
   }
-
-  a {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-  }
 `;
 
 interface SidebarProps {
@@ -49,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, activeItem, onMenuItemClic
           isActive={item.link === `/${activeItem}`}
           onClick={() => onMenuItemClick(item.link)}
         >
-          <a href={item.link}>{item.label}</a>
+          {item.label}
         </MenuItem>
       ))}
     </ul>
