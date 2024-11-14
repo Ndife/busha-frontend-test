@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import React, { useState, useRef, useEffect } from "react";
+import styled, { keyframes } from "styled-components";
 import Logo from "../icons/Logo";
 
 const NavbarContainer = styled.div`
@@ -11,9 +11,14 @@ const NavbarContainer = styled.div`
   padding: 0.6% 0;
   z-index: 1000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
 
-    @media (max-width: 768px) {
-    padding: 1 0%;
+  @media (max-width: 768px) {
+    padding: 1% 0;
+  }
+
+  &:hover {
+    background-color: #f8f8f8;
   }
 `;
 
@@ -33,22 +38,20 @@ const ItemsContainer = styled.div`
   }
 `;
 
-const LogoContainer = styled.div`
+const FlexBox = styled.div`
   display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const LogoContainer = styled(FlexBox)`
   gap: 4px;
-  align-items: flex-end;
   font-size: 20px;
   font-weight: bold;
 
   @media (max-width: 480px) {
     font-size: 18px;
   }
-`;
-
-const UserProfile = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
 `;
 
 const Avatar = styled.div`
@@ -64,8 +67,8 @@ const Avatar = styled.div`
   font-weight: bold;
 
   @media (max-width: 480px) {
-    width: 35px;
-    height: 35px;
+    width: 50px;
+    height: 50px;
     font-size: 16px;
   }
 `;
@@ -73,9 +76,25 @@ const Avatar = styled.div`
 const UserFullName = styled.div`
   font-size: 14px;
 
-  @media (max-width: 480px) {
-    font-size: 12px;
+  @media (max-width: 768px) {
+    font-size: 22px;
   }
+`;
+
+const UserProfile = styled(FlexBox)`
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const UserProfileMobile = styled(FlexBox)`
+  @media (min-width: 768px) {
+    display: none;
+  }
+  flex-direction: column;
+  width: 100%;
+  font-size: 32px;
+  margin-bottom: 30px;
 `;
 
 const MobileMenuButton = styled.div`
@@ -84,39 +103,77 @@ const MobileMenuButton = styled.div`
   gap: 5px;
   cursor: pointer;
 
-  @media (max-width: 739px) {
+  @media (max-width: 768px) {
     display: flex;
   }
 
   div {
-    width: 25px;
+    width: 30px;
     height: 3px;
     background-color: #333;
+    transition: background-color 0.3s ease;
+  }
+
+  &:hover div {
+    background-color: #f5f7fa;
+  }
+`;
+
+const slideIn = keyframes`
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+`;
+
+const slideOut = keyframes`
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
   }
 `;
 
 const DropdownMenu = styled.ul<{ isOpen: boolean }>`
-  list-style-type: none;
-  padding-left: 0;
-  margin-top: -13px;
-  display: ${({ isOpen }) => (isOpen ? "block" : "none")};
+  list-style: none;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 70%;
+  height: 100%;
   background-color: #fff;
-  width: 100%;
-  position: absolute;
-  top: 60px;
-  left: 0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+  padding-top: 60px;
+  font-size: 18px;
+  align-items: flex-start;
+  animation: ${({ isOpen }) => (isOpen ? slideIn : slideOut)} 0.3s ease forwards;
+
+  @media (max-width: 768px) {
+    margin: auto;
+  }
 `;
 
-const MenuItem = styled.li<{ isActive: boolean }>`
-  padding: 10px;
-  font-size: 16px;
+const MenuItem = styled.li<{ isActive?: boolean }>`
+  padding: 15px;
+  font-size: 18px;
   cursor: pointer;
-  font-weight: ${(props) => (props.isActive ? "bold" : "normal")};
+  font-weight: ${({ isActive }) => (isActive ? "bold" : "normal")};
   background-color: ${({ isActive }) => (isActive ? "#F5F7FA" : "transparent")};
+  transition: background-color 0.2s ease, font-weight 0.3s ease;
 
   &:hover {
-    background-color: #F5F7FA;
+    background-color: #f5f7fa;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
   }
 `;
 
@@ -124,15 +181,36 @@ interface NavbarProps {
   menuItems: { label: string; link: string }[];
   onMenuItemClick: (link: string) => void;
 }
+
 const Navbar: React.FC<NavbarProps> = ({ menuItems, onMenuItemClick }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const user = {
-    firstName: "Oluwatobi",
-    lastName: "Akindunjoye",
-  };
+  const menuRef = useRef<HTMLUListElement>(null);
+  const user = { firstName: "Oluwatobi", lastName: "Akindunjoye" };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("resize", handleResize);
+    
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const handleMenuItemClick = (link: string) => {
-    onMenuItemClick(link)
+    onMenuItemClick(link);
     setIsMenuOpen(false);
   };
 
@@ -153,10 +231,14 @@ const Navbar: React.FC<NavbarProps> = ({ menuItems, onMenuItemClick }) => {
           <div />
         </MobileMenuButton>
       </ItemsContainer>
-      <DropdownMenu isOpen={isMenuOpen}>
-        {menuItems.map((item) => (
-          <MenuItem key={item.link} isActive={false} onClick={() => handleMenuItemClick(item.link)}>
-            {item.label}
+      <DropdownMenu ref={menuRef} isOpen={isMenuOpen}>
+        <UserProfileMobile>
+          <Avatar>{user.firstName[0]}</Avatar>
+          <UserFullName>{`${user.firstName} ${user.lastName}`}</UserFullName>
+        </UserProfileMobile>
+        {menuItems.map(({ label, link }) => (
+          <MenuItem key={link} onClick={() => handleMenuItemClick(link)}>
+            <a href={link}>{label}</a>
           </MenuItem>
         ))}
       </DropdownMenu>
